@@ -9,6 +9,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -17,11 +18,11 @@ import java.time.LocalDateTime;
 public class Notification {
 
     @Id
-    private String id; // UUID
-    private String notificationStatus; //'S'ent, 'F'ail, 'W'aiting
-    private String message;
-    private String code;
-    private Subscription subscription;
+    private UUID id; // UUID
+    private String notificationStatus; //'S'ent, 'F'ailed, 'W'aiting
+    private String message; // Detailed message
+    private String code; // Message code
+    private UUID subscriptionId; // Related subscription
 
     @CreatedDate
     private LocalDateTime createdDate;

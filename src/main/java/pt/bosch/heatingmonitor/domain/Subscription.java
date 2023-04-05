@@ -9,6 +9,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -17,9 +18,9 @@ import java.time.LocalDateTime;
 public class Subscription {
 
     @Id
-    private String id; //UUID
-    private String receiverUrl; // url to send the notification
-    private String active; // S or N
+    private UUID id; // UUID
+    private String receiverUrl; // Url to send the notification
+    private String active; // Y or N
     private String event; // Event name subscribed
     private String appliance; // A device or piece of equipment
 

@@ -1,4 +1,4 @@
-package pt.bosch.heatingmonitor;
+package pt.bosch.heatingmonitor.bootstrap;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;

@@ -9,4 +9,8 @@ public interface SubscriptionService {
     Mono<SubscriptionDTO> saveSubscription(Mono<SubscriptionDTO> dto);
 
     Flux<SubscriptionDTO> findByActive(String active);
+
+    Mono<SubscriptionDTO> activate(String subscriptionId);
+
+    Mono<SubscriptionDTO> deactivate(String subscriptionId);
 }

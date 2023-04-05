@@ -8,6 +8,8 @@ import pt.bosch.heatingmonitor.repository.SubscriptionRepository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 public class SubscriptionServiceImpl implements SubscriptionService {
@@ -28,5 +30,25 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     @Override
     public Flux<SubscriptionDTO> findByActive(String active) {
         return repository.findByActive(active).map(mapper::domainToDto);
+    }
+
+    @Override
+    public Mono<SubscriptionDTO> activate(String subscriptionId) {
+        return repository.findById(UUID.fromString(subscriptionId))
+                .flatMap(entity -> {
+                    entity.setActive("Y");
+                    return repository.save(entity);
+                })
+                .map(mapper::domainToDto);
+    }
+
+    @Override
+    public Mono<SubscriptionDTO> deactivate(String subscriptionId) {
+        return repository.findById(UUID.fromString(subscriptionId))
+                .flatMap(entity -> {
+                    entity.setActive("N");
+                    return repository.save(entity);
+                })
+                .map(mapper::domainToDto);
     }
 }

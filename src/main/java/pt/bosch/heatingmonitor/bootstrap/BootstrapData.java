@@ -38,13 +38,13 @@ public class BootstrapData implements CommandLineRunner {
 
         Subscription subscription = Subscription.builder()
                 .receiverUrl("")
-                .active("S")
+                .active("Y")
                 .event("eventName_1")
                 .appliance("machine_name_1")
                 .build();
 
         Notification notification = Notification.builder()
-                .notificationStatus("S")
+                .notificationStatus("Y")
                 .message("message here")
                 .code("A-222")
                 .build();

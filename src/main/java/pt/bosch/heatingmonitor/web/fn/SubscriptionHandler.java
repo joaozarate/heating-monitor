@@ -7,6 +7,7 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.util.UriComponentsBuilder;
 import pt.bosch.heatingmonitor.services.SubscriptionService;
 import pt.bosch.heatingmonitor.model.SubscriptionDTO;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import static pt.bosch.heatingmonitor.web.fn.SubscriptionRouterConfig.SUBSCRIPTION_PATH_ID;
@@ -24,6 +25,11 @@ public class SubscriptionHandler {
                                 UriComponentsBuilder.fromPath("http://localhost:8080/" + SUBSCRIPTION_PATH_ID).build(dto.getId())
                         ).build()
                 );
+    }
+
+    public Mono<ServerResponse> listSubscriptions(ServerRequest request) {
+        Flux<SubscriptionDTO> flux = service.findByActive("Y");
+        return ServerResponse.ok().body(flux, SubscriptionDTO.class);
     }
 
 }

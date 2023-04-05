@@ -16,7 +16,7 @@ public class SubscriptionDTO {
 
     private UUID id; // UUID
     private String receiverUrl; // Url to send the notification
-    private String active; // Y or N
+    private String active = "Y"; // Y or N
     private String event; // Event name subscribed
     private String appliance; // A device or piece of equipment
     private LocalDateTime createdDate;

@@ -7,7 +7,7 @@ import pt.bosch.heatingmonitor.model.SubscriptionDTO;
 @Mapper
 public interface SubscriptionMapper {
 
-    SubscriptionDTO domainToDto(Subscription subscription);
+    SubscriptionDTO domainToDto(Subscription domain);
 
     Subscription dtoToDomain(SubscriptionDTO dto);
 }

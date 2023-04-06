@@ -21,12 +21,11 @@ public class SubscriptionHandler {
     private final SubscriptionService service;
 
     public Mono<ServerResponse> subscribe(ServerRequest request) {
-        return service.saveSubscription(request.bodyToMono(SubscriptionDTO.class))
-                .flatMap(
-                        dto -> ServerResponse.created(
-                                UriComponentsBuilder.fromPath("http://localhost:8080/" + SUBSCRIPTION_PATH_ID).build(dto.getId())
-                        ).build()
-                );
+        Mono<SubscriptionDTO> mono = service.saveSubscription(request.bodyToMono(SubscriptionDTO.class));
+        return mono.flatMap(dto -> ServerResponse
+                .created(UriComponentsBuilder.fromPath("http://localhost:8080/" + SUBSCRIPTION_PATH_ID).build(dto.getId()))
+                .bodyValue(dto)
+        );
     }
 
     public Mono<ServerResponse> listSubscriptions(ServerRequest request) {

@@ -21,7 +21,7 @@ public class NotificationHandler {
         return service.notify(request.bodyToMono(NotificationDTO.class))
                 .flatMap(
                         dto -> ServerResponse.created(
-                                UriComponentsBuilder.fromPath("http://localhost:8080/" + NOTIFICATION_PATH_ID).build(dto.getId())
+                                UriComponentsBuilder.fromPath("http://localhost:8080" + NOTIFICATION_PATH_ID).build(dto.getId())
                         ).build()
                 );
     }

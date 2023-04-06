@@ -1,7 +1,9 @@
 package pt.bosch.heatingmonitor.services;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import pt.bosch.heatingmonitor.events.NotificationEvent;
 import pt.bosch.heatingmonitor.mappers.NotificationMapper;
 import pt.bosch.heatingmonitor.model.NotificationDTO;
 import pt.bosch.heatingmonitor.repository.NotificationRepository;
@@ -13,6 +15,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     private final NotificationMapper mapper;
     private final NotificationRepository repository;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     @Override
     public Mono<NotificationDTO> notify(Mono<NotificationDTO> dto) {
@@ -21,7 +24,9 @@ public class NotificationServiceImpl implements NotificationService {
                     entity.setNotificationStatus("W");
                     return repository.save(entity);
                 })
-                .doOnSuccess(System.out::println)
-                .map(mapper::domainToDto);
+                .map(mapper::domainToDto)
+                .doOnSuccess(result -> {
+                    applicationEventPublisher.publishEvent(NotificationEvent.builder().dto(result).build());
+                });
     }
 }

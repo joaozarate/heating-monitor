@@ -7,9 +7,6 @@ import pt.bosch.heatingmonitor.domain.Notification;
 import pt.bosch.heatingmonitor.domain.Subscription;
 import pt.bosch.heatingmonitor.repository.NotificationRepository;
 import pt.bosch.heatingmonitor.repository.SubscriptionRepository;
-import reactor.core.publisher.Mono;
-
-import java.util.UUID;
 
 @RequiredArgsConstructor
 @Component
@@ -37,7 +34,8 @@ public class BootstrapData implements CommandLineRunner {
     private void loadData() {
 
         Subscription subscription = Subscription.builder()
-                .receiverUrl("")
+                .baseReceiverUrl("")
+                .relativeReceiverUrl("")
                 .active("Y")
                 .event("eventName_1")
                 .appliance("machine_name_1")

@@ -19,7 +19,8 @@ public class Subscription {
 
     @Id
     private UUID id; // UUID
-    private String receiverUrl; // Url to send the notification
+    private String baseReceiverUrl; // Protocol + host + port
+    private String relativeReceiverUrl; // Path
     private String active; // Y or N
     private String event; // Event name subscribed
     private String appliance; // A device or piece of equipment

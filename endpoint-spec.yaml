@@ -1,0 +1,67 @@
+openapi: 3.0.0
+info:
+  version: '1.0'
+  title: Heating Monitor
+  description: Connecting heating systems of Bosch Thermotechnology
+servers:
+  - url: http://localhost:8080
+    description: Local server
+paths:
+  /subscription:
+    post:
+      summary: Registers a new rest hook
+      operationId: createSubscriptions
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                baseReceiverUrl:
+                  type: string
+                relativeReceiverUrl:
+                  type: string
+                deviceId:
+                  type: string
+                  format: uuid
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  baseReceiverUrl:
+                    type: string
+                  relativeReceiverUrl:
+                    type: string
+                  active:
+                    type: string
+                  event:
+                    type: string
+                  deviceId:
+                    type: string
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string

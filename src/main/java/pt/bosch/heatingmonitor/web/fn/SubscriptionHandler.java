@@ -3,10 +3,15 @@ package pt.bosch.heatingmonitor.web.fn;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.Errors;
+import org.springframework.validation.Validator;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.server.ServerWebInputException;
 import org.springframework.web.util.UriComponentsBuilder;
+import pt.bosch.heatingmonitor.model.SubscriptionRequest;
 import pt.bosch.heatingmonitor.services.SubscriptionService;
 import pt.bosch.heatingmonitor.model.SubscriptionDTO;
 import reactor.core.publisher.Flux;
@@ -19,13 +24,27 @@ import static pt.bosch.heatingmonitor.web.fn.SubscriptionRouterConfig.SUBSCRIPTI
 public class SubscriptionHandler {
 
     private final SubscriptionService service;
+    private final Validator validator;
+
+    private void validate(SubscriptionRequest dto) {
+        Errors errors = new BeanPropertyBindingResult(dto, "subscriptionRequest");
+        validator.validate(dto, errors);
+
+        if (errors.hasErrors()) {
+            throw new ServerWebInputException(errors.toString());
+        }
+    }
 
     public Mono<ServerResponse> subscribe(ServerRequest request) {
-        Mono<SubscriptionDTO> mono = service.saveSubscription(request.bodyToMono(SubscriptionDTO.class));
-        return mono.flatMap(dto -> ServerResponse
-                .created(UriComponentsBuilder.fromPath("http://localhost:8080/" + SUBSCRIPTION_PATH_ID).build(dto.getId()))
-                .bodyValue(dto)
-        );
+        return request.bodyToMono(SubscriptionRequest.class)
+                .doOnNext(this::validate)
+                .flatMap(dto -> service.saveSubscription(Mono.just(dto))
+                        .flatMap(dtoSaved ->
+                                ServerResponse.created(
+                                        UriComponentsBuilder.fromPath("http://localhost:8080/" + SUBSCRIPTION_PATH_ID).build("dto.getId()")
+                                ).bodyValue(dtoSaved)
+                        )
+                );
     }
 
     public Mono<ServerResponse> listSubscriptions(ServerRequest request) {

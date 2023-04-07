@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pt.bosch.heatingmonitor.mappers.SubscriptionMapper;
 import pt.bosch.heatingmonitor.model.SubscriptionDTO;
+import pt.bosch.heatingmonitor.model.SubscriptionRequest;
 import pt.bosch.heatingmonitor.repository.SubscriptionRepository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -18,7 +19,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     private final SubscriptionRepository repository;
 
     @Override
-    public Mono<SubscriptionDTO> saveSubscription(Mono<SubscriptionDTO> dto) {
+    public Mono<SubscriptionDTO> saveSubscription(Mono<SubscriptionRequest> dto) {
         return dto.map(mapper::dtoToDomain)
                 .flatMap(entity -> {
                     entity.setEvent("event-name");

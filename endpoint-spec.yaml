@@ -26,28 +26,45 @@ paths:
                   type: string
                   format: uuid
       responses:
+        '201':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subscription'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /subscription/{subscriptionId}:
+    get:
+      parameters:
+        - in: path
+          name: subscriptionId
+          required: true
+          schema:
+            type: string
+            format: uuid
+            minimum: 1
+          description: sadsfdsf
+      summary: Retrieves the subscription based on its id
+      responses:
         '200':
           description: successful operation
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  id:
-                    type: string
-                    format: uuid
-                  baseReceiverUrl:
-                    type: string
-                  relativeReceiverUrl:
-                    type: string
-                  active:
-                    type: string
-                  event:
-                    type: string
-                  deviceId:
-                    type: string
-        default:
-          description: unexpected error
+                $ref: '#/components/schemas/Subscription'
+        '400':
+          description: invalid id supplied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: gateway not found
           content:
             application/json:
               schema:
@@ -65,3 +82,18 @@ components:
           format: int32
         message:
           type: string
+    Subscription:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        baseReceiverUrl:
+          type: string
+        relativeReceiverUrl:
+          type: string
+        active:
+          type: string
+        deviceId:
+          type: string
+    

@@ -40,16 +40,16 @@ paths:
                 $ref: '#/components/schemas/Error'
   /subscription/{subscriptionId}:
     get:
+      summary: Retrieves the subscription based on its id
       parameters:
         - in: path
           name: subscriptionId
+          description: The subscription id
           required: true
           schema:
             type: string
             format: uuid
             minimum: 1
-          description: sadsfdsf
-      summary: Retrieves the subscription based on its id
       responses:
         '200':
           description: successful operation
@@ -59,6 +59,38 @@ paths:
                 $ref: '#/components/schemas/Subscription'
         '400':
           description: invalid id supplied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: gateway not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /notification:
+    post:
+      summary: This receives a request from the device
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                code:
+                  type: string
+                deviceId:
+                  type: string
+                  format: uuid
+      responses:
+        '201':
+          description: successful operation
+        '400':
+          description: invalid request supplied
           content:
             application/json:
               schema:

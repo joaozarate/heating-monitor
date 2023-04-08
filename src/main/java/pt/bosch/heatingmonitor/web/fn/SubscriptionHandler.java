@@ -11,6 +11,7 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.ServerWebInputException;
 import org.springframework.web.util.UriComponentsBuilder;
+import pt.bosch.heatingmonitor.exceptions.Error;
 import pt.bosch.heatingmonitor.model.SubscriptionRequest;
 import pt.bosch.heatingmonitor.services.SubscriptionService;
 import pt.bosch.heatingmonitor.model.SubscriptionDTO;
@@ -44,7 +45,9 @@ public class SubscriptionHandler {
                                         UriComponentsBuilder.fromPath("http://localhost:8080/" + SUBSCRIPTION_PATH_ID).build("dto.getId()")
                                 ).bodyValue(dtoSaved)
                         )
-                );
+                )
+                .onErrorResume(ServerWebInputException.class, e -> ServerResponse.badRequest().bodyValue(Error.builder().code("E-123").message(e.getMessage()).build()))
+                .onErrorResume(e -> ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR).bodyValue(Error.builder().code("E-999").message("Unexpected error. Please contact support.").build()));
     }
 
     public Mono<ServerResponse> listSubscriptions(ServerRequest request) {

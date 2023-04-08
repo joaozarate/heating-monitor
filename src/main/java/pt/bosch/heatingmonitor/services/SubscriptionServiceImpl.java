@@ -23,6 +23,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         return dto.map(mapper::dtoToDomain)
                 .flatMap(entity -> {
                     entity.setEvent("event-name");
+                    entity.setActive("Y");
                     return repository.save(entity);
                 })
                 .map(mapper::domainToDto);

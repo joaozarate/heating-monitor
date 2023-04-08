@@ -26,6 +26,7 @@ public class SubscriptionRouterConfig {
     public RouterFunction<ServerResponse> subscriptionRoutes() {
         return route()
                 .POST(SUBSCRIPTION_PATH, accept(APPLICATION_JSON), handler::subscribe)
+                .GET(SUBSCRIPTION_PATH_ID, accept(APPLICATION_JSON), handler::getSubscriptionById)
                 .GET(SUBSCRIPTION_PATH_ACTIVE, accept(APPLICATION_JSON), handler::listSubscriptions)
                 .POST(SUBSCRIPTION_PATH_ACTIVATE, accept(APPLICATION_JSON), handler::activate)
                 .POST(SUBSCRIPTION_PATH_DEACTIVATE, accept(APPLICATION_JSON), handler::deactivate)

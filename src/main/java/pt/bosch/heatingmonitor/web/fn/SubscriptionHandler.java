@@ -18,6 +18,8 @@ import pt.bosch.heatingmonitor.model.SubscriptionDTO;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.UUID;
+
 import static pt.bosch.heatingmonitor.web.fn.SubscriptionRouterConfig.SUBSCRIPTION_PATH_ID;
 
 @Component
@@ -49,6 +51,23 @@ public class SubscriptionHandler {
                 .onErrorResume(ServerWebInputException.class, e -> ServerResponse.badRequest().bodyValue(Error.builder().code("E-123").message(e.getMessage()).build()))
                 .onErrorResume(e -> ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR).bodyValue(Error.builder().code("E-999").message("Unexpected error. Please contact support.").build()));
     }
+
+    public Mono<ServerResponse> getSubscriptionById(ServerRequest request) {
+
+        String param = request.pathVariable("subscriptionId");
+        UUID subscriptionId = null;
+        try {
+            subscriptionId = UUID.fromString(param);
+        } catch (IllegalArgumentException e) {
+            return ServerResponse.badRequest().bodyValue(Error.builder().code("E-123").message("Invalid subscriptionId").build());
+        }
+
+        return service.findById(UUID.fromString(request.pathVariable("subscriptionId")))
+                .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND)))
+                .flatMap(dto -> ServerResponse.ok().bodyValue(dto))
+                .onErrorResume(e -> ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR).bodyValue(Error.builder().code("E-999").message("Unexpected error. Please contact support.").build()));
+    }
+
 
     public Mono<ServerResponse> listSubscriptions(ServerRequest request) {
         Flux<SubscriptionDTO> flux = service.findByActive("Y");

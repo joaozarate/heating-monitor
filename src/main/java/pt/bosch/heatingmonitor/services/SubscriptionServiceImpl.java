@@ -30,6 +30,13 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     @Override
+    public Mono<SubscriptionDTO> findById(UUID subscriptionId) {
+        return repository.findById(subscriptionId)
+                .map(mapper::domainToDto);
+    }
+
+
+    @Override
     public Flux<SubscriptionDTO> findByActive(String active) {
         return repository.findByActive(active).map(mapper::domainToDto);
     }

@@ -9,7 +9,6 @@ import pt.bosch.heatingmonitor.exceptions.NotificationException;
 import pt.bosch.heatingmonitor.mappers.NotificationMapper;
 import pt.bosch.heatingmonitor.model.NotificationRequest;
 import pt.bosch.heatingmonitor.repository.NotificationRepository;
-import pt.bosch.heatingmonitor.repository.SubscriptionRepository;
 import reactor.core.publisher.Mono;
 
 import java.util.UUID;
@@ -31,7 +30,7 @@ public class NotificationServiceImpl implements NotificationService {
                 })
                 .doOnSuccess(entity -> {
                     applicationEventPublisher.publishEvent(NotificationEvent.builder().notification(entity).build());
-                }).onErrorResume(Exception.class,  e -> Mono.error(new NotificationException("An unexpected error occurred while notifying.", e)));
+                }).onErrorResume(e -> Mono.error(new NotificationException("An unexpected error occurred while notifying.", e)));
     }
 
     @Override

@@ -1,5 +1,6 @@
 package pt.bosch.heatingmonitor.model;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,7 +13,13 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 public class NotificationRequest {
-    private UUID subscription; // Subscription related to this notification
+
+    @NotBlank
+    private String subscription; // Subscription related to this notification
+
+    @NotBlank
     private String code; // Message code
+
+    @NotBlank
     private String message; // Detailed message
 }

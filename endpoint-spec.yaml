@@ -89,6 +89,10 @@ paths:
       responses:
         '201':
           description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notification'
         '400':
           description: invalid request supplied
           content:
@@ -128,3 +132,18 @@ components:
           type: string
         deviceId:
           type: string
+    Notification:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        notificationStatus:
+          type: string
+        message:
+          type: string
+        code:
+          type: string
+        deviceId:
+          type: string
+          format: uuid

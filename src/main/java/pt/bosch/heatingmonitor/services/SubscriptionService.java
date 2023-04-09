@@ -1,7 +1,7 @@
 package pt.bosch.heatingmonitor.services;
 
-import pt.bosch.heatingmonitor.model.SubscriptionDTO;
 import pt.bosch.heatingmonitor.model.SubscriptionRequest;
+import pt.bosch.heatingmonitor.model.SubscriptionResponse;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -9,13 +9,13 @@ import java.util.UUID;
 
 public interface SubscriptionService {
 
-    Mono<SubscriptionDTO> saveSubscription(Mono<SubscriptionRequest> dto);
+    Mono<SubscriptionResponse> saveSubscription(Mono<SubscriptionRequest> dto);
 
-    Mono<SubscriptionDTO> findById(UUID subscriptionId);
+    Mono<SubscriptionResponse> findById(UUID subscriptionId);
 
-    Flux<SubscriptionDTO> findByActive(String active);
+    Flux<SubscriptionResponse> findByActive(Boolean active);
 
-    Mono<SubscriptionDTO> activate(String subscriptionId);
+    Mono<SubscriptionResponse> activate(String subscriptionId);
 
-    Mono<SubscriptionDTO> deactivate(String subscriptionId);
+    Mono<SubscriptionResponse> deactivate(String subscriptionId);
 }

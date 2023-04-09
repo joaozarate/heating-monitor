@@ -3,8 +3,8 @@ package pt.bosch.heatingmonitor.services;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pt.bosch.heatingmonitor.mappers.SubscriptionMapper;
-import pt.bosch.heatingmonitor.model.SubscriptionDTO;
 import pt.bosch.heatingmonitor.model.SubscriptionRequest;
+import pt.bosch.heatingmonitor.model.SubscriptionResponse;
 import pt.bosch.heatingmonitor.repository.SubscriptionRepository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -19,43 +19,43 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     private final SubscriptionRepository repository;
 
     @Override
-    public Mono<SubscriptionDTO> saveSubscription(Mono<SubscriptionRequest> dto) {
+    public Mono<SubscriptionResponse> saveSubscription(Mono<SubscriptionRequest> dto) {
         return dto.map(mapper::dtoToDomain)
                 .flatMap(entity -> {
                     entity.setEvent("event-name");
-                    entity.setActive("Y");
+                    entity.setActive(true);
                     return repository.save(entity);
                 })
                 .map(mapper::domainToDto);
     }
 
     @Override
-    public Mono<SubscriptionDTO> findById(UUID subscriptionId) {
+    public Mono<SubscriptionResponse> findById(UUID subscriptionId) {
         return repository.findById(subscriptionId)
                 .map(mapper::domainToDto);
     }
 
 
     @Override
-    public Flux<SubscriptionDTO> findByActive(String active) {
+    public Flux<SubscriptionResponse> findByActive(Boolean active) {
         return repository.findByActive(active).map(mapper::domainToDto);
     }
 
     @Override
-    public Mono<SubscriptionDTO> activate(String subscriptionId) {
+    public Mono<SubscriptionResponse> activate(String subscriptionId) {
         return repository.findById(UUID.fromString(subscriptionId))
                 .flatMap(entity -> {
-                    entity.setActive("Y");
+                    entity.setActive(true);
                     return repository.save(entity);
                 })
                 .map(mapper::domainToDto);
     }
 
     @Override
-    public Mono<SubscriptionDTO> deactivate(String subscriptionId) {
+    public Mono<SubscriptionResponse> deactivate(String subscriptionId) {
         return repository.findById(UUID.fromString(subscriptionId))
                 .flatMap(entity -> {
-                    entity.setActive("N");
+                    entity.setActive(false);
                     return repository.save(entity);
                 })
                 .map(mapper::domainToDto);

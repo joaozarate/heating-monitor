@@ -8,6 +8,8 @@ import pt.bosch.heatingmonitor.domain.Subscription;
 import pt.bosch.heatingmonitor.repository.NotificationRepository;
 import pt.bosch.heatingmonitor.repository.SubscriptionRepository;
 
+import java.util.UUID;
+
 @RequiredArgsConstructor
 @Component
 public class BootstrapData implements CommandLineRunner {
@@ -34,21 +36,21 @@ public class BootstrapData implements CommandLineRunner {
     private void loadData() {
 
         Subscription subscription = Subscription.builder()
-                .baseReceiverUrl("")
-                .relativeReceiverUrl("")
-                .active("Y")
+                .baseReceiverUrl("http://localhost:8080")
+                .relativeReceiverUrl("/api/v1/notifications")
+                .active(true)
                 .event("eventName_1")
-                .appliance("machine_name_1")
+                .device(UUID.randomUUID())
                 .build();
 
         Notification notification = Notification.builder()
-                .notificationStatus("Y")
+                .notificationStatus("S")
                 .message("message here")
-                .code("A-222")
+                .code("M-222")
                 .build();
 
         subscriptionRepository.save(subscription).flatMap(savedSubscription -> {
-            notification.setSubscriptionId(savedSubscription.getId());
+            notification.setSubscription(savedSubscription.getId());
             return notificationRepository.save(notification);
         }).subscribe();
 

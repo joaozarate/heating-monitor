@@ -1,13 +1,13 @@
 package pt.bosch.heatingmonitor.services;
 
-import org.springframework.web.reactive.function.server.ServerResponse;
-import pt.bosch.heatingmonitor.model.NotificationDTO;
+import pt.bosch.heatingmonitor.domain.Notification;
+import pt.bosch.heatingmonitor.model.NotificationRequest;
 import reactor.core.publisher.Mono;
 
 import java.util.UUID;
 
 public interface NotificationService {
-    Mono<NotificationDTO> notify(Mono<NotificationDTO> dto);
+    Mono<Notification> notify(Mono<NotificationRequest> dto);
 
     void updateStatus(Mono<UUID> subscriptionId, String status);
 }

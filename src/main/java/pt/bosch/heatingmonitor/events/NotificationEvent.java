@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import pt.bosch.heatingmonitor.model.NotificationDTO;
+import pt.bosch.heatingmonitor.domain.Notification;
 
 @Data
 @NoArgsConstructor
@@ -14,6 +14,6 @@ public class NotificationEvent {
 
     private String eventType;
 
-    private NotificationDTO dto;
+    private Notification notification;
 
 }

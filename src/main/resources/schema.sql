@@ -6,7 +6,7 @@ CREATE TABLE if NOT EXISTS notification
     code varchar(255),
     created_date   timestamp,
     last_modified_date timestamp,
-    subscription_id UUID
+    subscription UUID
 );
 
 CREATE TABLE if NOT EXISTS subscription
@@ -14,9 +14,9 @@ CREATE TABLE if NOT EXISTS subscription
     id UUID DEFAULT RANDOM_UUID() PRIMARY KEY,
     base_receiver_url varchar(255),
     relative_receiver_url varchar(255),
-    active varchar(255),
+    active boolean,
     event varchar(255),
-    appliance varchar(255),
+    device UUID,
     created_date   timestamp,
     last_modified_date timestamp
 );

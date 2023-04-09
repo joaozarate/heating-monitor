@@ -19,5 +19,5 @@ public class SubscriptionRequest {
     private String relativeReceiverUrl; // Path
 
     @NotBlank
-    private String appliance; // A device or piece of equipment
+    private String device; // A device or piece of equipment
 }

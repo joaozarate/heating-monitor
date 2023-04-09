@@ -12,15 +12,12 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class SubscriptionDTO {
-
+public class SubscriptionResponse {
     private UUID id; // UUID
     private String baseReceiverUrl; // Protocol + host + port
     private String relativeReceiverUrl; // Path
-    private String active = "Y"; // Y or N
-    private String event; // Event name subscribed
-    private String appliance; // A device or piece of equipment
+    private Boolean active;
+    private UUID device; // A device or piece of equipment
     private LocalDateTime createdDate;
     private LocalDateTime lastModifiedDate;
-
 }

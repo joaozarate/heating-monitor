@@ -1,5 +1,6 @@
 package pt.bosch.heatingmonitor.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,6 +19,10 @@ public class SubscriptionResponse {
     private String relativeReceiverUrl; // Path
     private Boolean active;
     private UUID device; // A device or piece of equipment
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyy-MM-dd hh:mm:ss a")
     private LocalDateTime createdDate;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyy-MM-dd hh:mm:ss a")
     private LocalDateTime lastModifiedDate;
 }

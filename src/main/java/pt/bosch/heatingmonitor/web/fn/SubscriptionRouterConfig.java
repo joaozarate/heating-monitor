@@ -14,7 +14,7 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
 @RequiredArgsConstructor
 public class SubscriptionRouterConfig {
 
-    public static final String SUBSCRIPTION_PATH = "/subscriptions";
+    public static final String SUBSCRIPTION_PATH = "api/v1/subscriptions";
     public static final String SUBSCRIPTION_PATH_ID = SUBSCRIPTION_PATH + "/{subscriptionId}";
     public static final String SUBSCRIPTION_PATH_ACTIVE = SUBSCRIPTION_PATH + ":active";
     public static final String SUBSCRIPTION_PATH_ACTIVATE = SUBSCRIPTION_PATH_ID + ":activate";

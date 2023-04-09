@@ -14,7 +14,7 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
 @RequiredArgsConstructor
 public class NotificationRouterConfig {
 
-    public static final String NOTIFICATION_PATH = "/notifications";
+    public static final String NOTIFICATION_PATH = "api/v1/notifications";
     public static final String NOTIFICATION_PATH_ID = NOTIFICATION_PATH + "/{notificationId}";
 
     private final NotificationHandler handler;

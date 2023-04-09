@@ -6,18 +6,20 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class SubscriptionRequest {
+public class NotificationRequest {
 
     @NotBlank
-    private String baseReceiverUrl; // Protocol + host + port
+    private String subscription; // Subscription related to this notification
 
     @NotBlank
-    private String relativeReceiverUrl; // Path
+    private String code; // Message code
 
     @NotBlank
-    private String device; // A device or piece of equipment
+    private String message; // Detailed message
 }

@@ -4,10 +4,10 @@ info:
   title: Heating Monitor
   description: Connecting heating systems of Bosch Thermotechnology
 servers:
-  - url: http://localhost:8080
+  - url: http://localhost:8080/api/v1
     description: Local server
 paths:
-  /subscription:
+  /subscriptions:
     post:
       summary: Registers a new rest hook
       operationId: createSubscriptions
@@ -22,7 +22,7 @@ paths:
                   type: string
                 relativeReceiverUrl:
                   type: string
-                deviceId:
+                device:
                   type: string
                   format: uuid
       responses:
@@ -38,7 +38,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /subscription/{subscriptionId}:
+  /subscriptions/{subscriptionId}:
     get:
       summary: Retrieves the subscription based on its id
       parameters:
@@ -69,7 +69,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /notification:
+  /notifications:
     post:
       summary: This receives a request from the device
       requestBody:
@@ -83,12 +83,16 @@ paths:
                   type: string
                 code:
                   type: string
-                deviceId:
+                subscription:
                   type: string
                   format: uuid
       responses:
         '201':
           description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notification'
         '400':
           description: invalid request supplied
           content:
@@ -126,5 +130,20 @@ components:
           type: string
         active:
           type: string
-        deviceId:
+        device:
           type: string
+    Notification:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        notificationStatus:
+          type: string
+        message:
+          type: string
+        code:
+          type: string
+        subscription:
+          type: string
+          format: uuid

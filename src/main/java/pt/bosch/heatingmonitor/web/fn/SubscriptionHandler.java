@@ -11,11 +11,14 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.ServerWebInputException;
 import org.springframework.web.util.UriComponentsBuilder;
+import pt.bosch.heatingmonitor.exceptions.Error;
 import pt.bosch.heatingmonitor.model.SubscriptionRequest;
+import pt.bosch.heatingmonitor.model.SubscriptionResponse;
 import pt.bosch.heatingmonitor.services.SubscriptionService;
-import pt.bosch.heatingmonitor.model.SubscriptionDTO;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.UUID;
 
 import static pt.bosch.heatingmonitor.web.fn.SubscriptionRouterConfig.SUBSCRIPTION_PATH_ID;
 
@@ -39,17 +42,36 @@ public class SubscriptionHandler {
         return request.bodyToMono(SubscriptionRequest.class)
                 .doOnNext(this::validate)
                 .flatMap(dto -> service.saveSubscription(Mono.just(dto))
-                        .flatMap(dtoSaved ->
+                        .flatMap(entity ->
                                 ServerResponse.created(
-                                        UriComponentsBuilder.fromPath("http://localhost:8080/" + SUBSCRIPTION_PATH_ID).build("dto.getId()")
-                                ).bodyValue(dtoSaved)
+                                        UriComponentsBuilder.fromPath("http://localhost:8080/" + SUBSCRIPTION_PATH_ID).build(entity.getId())
+                                ).bodyValue(entity)
                         )
-                );
+                )
+                .onErrorResume(ServerWebInputException.class, e -> ServerResponse.badRequest().bodyValue(Error.builder().code("E-123").message(e.getMessage()).build()))
+                .onErrorResume(e -> ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR).bodyValue(Error.builder().code("E-999").message("Unexpected error. Please contact support.").build()));
+    }
+
+    public Mono<ServerResponse> getSubscriptionById(ServerRequest request) {
+
+        String param = request.pathVariable("subscriptionId");
+        UUID subscriptionId;
+        try {
+            subscriptionId = UUID.fromString(param);
+        } catch (IllegalArgumentException e) {
+            return ServerResponse.badRequest().bodyValue(Error.builder().code("E-123").message("Invalid subscriptionId").build());
+        }
+
+        return service.findById(subscriptionId)
+                .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND)))
+                .flatMap(dto -> ServerResponse.ok().bodyValue(dto))
+                .onErrorResume(ResponseStatusException.class, e -> ServerResponse.notFound().build())
+                .onErrorResume(e -> ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR).bodyValue(Error.builder().code("E-999").message("Unexpected error. Please contact support.").build()));
     }
 
     public Mono<ServerResponse> listSubscriptions(ServerRequest request) {
-        Flux<SubscriptionDTO> flux = service.findByActive("Y");
-        return ServerResponse.ok().body(flux, SubscriptionDTO.class);
+        Flux<SubscriptionResponse> flux = service.findByActive(true);
+        return ServerResponse.ok().body(flux, SubscriptionResponse.class);
     }
 
     public Mono<ServerResponse> activate(ServerRequest request) {

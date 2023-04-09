@@ -14,7 +14,7 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
 @RequiredArgsConstructor
 public class SubscriptionRouterConfig {
 
-    public static final String SUBSCRIPTION_PATH = "/subscriptions";
+    public static final String SUBSCRIPTION_PATH = "api/v1/subscriptions";
     public static final String SUBSCRIPTION_PATH_ID = SUBSCRIPTION_PATH + "/{subscriptionId}";
     public static final String SUBSCRIPTION_PATH_ACTIVE = SUBSCRIPTION_PATH + ":active";
     public static final String SUBSCRIPTION_PATH_ACTIVATE = SUBSCRIPTION_PATH_ID + ":activate";
@@ -26,6 +26,7 @@ public class SubscriptionRouterConfig {
     public RouterFunction<ServerResponse> subscriptionRoutes() {
         return route()
                 .POST(SUBSCRIPTION_PATH, accept(APPLICATION_JSON), handler::subscribe)
+                .GET(SUBSCRIPTION_PATH_ID, accept(APPLICATION_JSON), handler::getSubscriptionById)
                 .GET(SUBSCRIPTION_PATH_ACTIVE, accept(APPLICATION_JSON), handler::listSubscriptions)
                 .POST(SUBSCRIPTION_PATH_ACTIVATE, accept(APPLICATION_JSON), handler::activate)
                 .POST(SUBSCRIPTION_PATH_DEACTIVATE, accept(APPLICATION_JSON), handler::deactivate)

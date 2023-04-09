@@ -22,12 +22,12 @@ public class Notification {
     private String notificationStatus; //'S'ent, 'F'ailed, 'W'aiting
     private String message; // Detailed message
     private String code; // Message code
-    private UUID subscriptionId; // Related subscription
 
     @CreatedDate
     private LocalDateTime createdDate;
 
     @LastModifiedDate
     private LocalDateTime lastModifiedDate;
+    private UUID subscription; // Related subscription
 
 }

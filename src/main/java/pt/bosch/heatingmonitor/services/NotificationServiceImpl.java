@@ -3,10 +3,11 @@ package pt.bosch.heatingmonitor.services;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import pt.bosch.heatingmonitor.domain.Notification;
 import pt.bosch.heatingmonitor.events.NotificationEvent;
 import pt.bosch.heatingmonitor.exceptions.NotificationException;
 import pt.bosch.heatingmonitor.mappers.NotificationMapper;
-import pt.bosch.heatingmonitor.model.NotificationDTO;
+import pt.bosch.heatingmonitor.model.NotificationRequest;
 import pt.bosch.heatingmonitor.repository.NotificationRepository;
 import reactor.core.publisher.Mono;
 
@@ -21,18 +22,15 @@ public class NotificationServiceImpl implements NotificationService {
     private final ApplicationEventPublisher applicationEventPublisher;
 
     @Override
-    public Mono<NotificationDTO> notify(Mono<NotificationDTO> dto) {
-        return dto.map(mapper::dtoToDomain)
-                .flatMap(entity -> {
-                    entity.setNotificationStatus("W");
-                    return repository.save(entity);
+    public Mono<Notification> notify(Mono<NotificationRequest> request) {
+        return request.map(mapper::dtoToDomain)
+                .flatMap(notification -> {
+                    notification.setNotificationStatus("W");
+                    return repository.save(notification);
                 })
-                .map(mapper::domainToDto)
-                .doOnSuccess(result -> {
-                    applicationEventPublisher.publishEvent(NotificationEvent.builder().dto(result).build());
-                }).onErrorResume(Exception.class,  e -> {
-                    return Mono.error(new NotificationException("An unexpected error occurred while notifying.", e));
-                });
+                .doOnSuccess(entity -> {
+                    applicationEventPublisher.publishEvent(NotificationEvent.builder().notification(entity).build());
+                }).onErrorResume(e -> Mono.error(new NotificationException("An unexpected error occurred while notifying.", e)));
     }
 
     @Override

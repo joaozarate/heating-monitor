@@ -17,6 +17,8 @@ public class BootstrapData implements CommandLineRunner {
     private final NotificationRepository notificationRepository;
     private final SubscriptionRepository subscriptionRepository;
 
+    public static Subscription subscriptionVar;
+
 
     @Override
     public void run(String... args) throws Exception {
@@ -50,6 +52,7 @@ public class BootstrapData implements CommandLineRunner {
                 .build();
 
         subscriptionRepository.save(subscription).flatMap(savedSubscription -> {
+            subscriptionVar = savedSubscription;
             notification.setSubscription(savedSubscription.getId());
             return notificationRepository.save(notification);
         }).subscribe();

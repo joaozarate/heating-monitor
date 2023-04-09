@@ -65,6 +65,7 @@ public class SubscriptionHandler {
         return service.findById(subscriptionId)
                 .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND)))
                 .flatMap(dto -> ServerResponse.ok().bodyValue(dto))
+                .onErrorResume(ResponseStatusException.class, e -> ServerResponse.notFound().build())
                 .onErrorResume(e -> ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR).bodyValue(Error.builder().code("E-999").message("Unexpected error. Please contact support.").build()));
     }
 

@@ -34,14 +34,10 @@ You can use the generated .jar file in the root folder or create a new one using
 
 ### Packaging with maven wrapper
 
-There is an error in the tests where every request returns a 404 error, even though the endpoint exists. This occurred after the tests were already working.
-
-I am trying to figure out the issue, and if I am successful, I will commit the changes to a new branch and inform you.
-
-Therefore, to pack the project, you need to execute the command below and skip the tests.
+To pack the project, you need to execute the command below.
 
 ```
-./mvnw clean package -DskipTests 
+./mvnw clean package
 ```
 
 ### Running the jar downloaded or packaged

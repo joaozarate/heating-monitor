@@ -20,6 +20,7 @@ public class NotificationServiceImpl implements NotificationService {
     private final NotificationMapper mapper;
     private final NotificationRepository repository;
     private final ApplicationEventPublisher applicationEventPublisher;
+    private final SubscriptionSSEService sseService;
 
     @Override
     public Mono<Notification> notify(Mono<NotificationRequest> request) {
@@ -30,6 +31,7 @@ public class NotificationServiceImpl implements NotificationService {
                 })
                 .doOnSuccess(entity -> {
                     applicationEventPublisher.publishEvent(NotificationEvent.builder().notification(entity).build());
+                    sseService.emitMessage(mapper.domainToDto(entity));
                 }).onErrorResume(e -> Mono.error(new NotificationException("An unexpected error occurred while notifying.", e)));
     }
 

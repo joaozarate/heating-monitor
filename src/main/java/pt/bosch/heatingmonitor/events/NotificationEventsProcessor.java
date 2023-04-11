@@ -10,6 +10,7 @@ import pt.bosch.heatingmonitor.exceptions.NotificationException;
 import pt.bosch.heatingmonitor.model.NotificationResponse;
 import pt.bosch.heatingmonitor.repository.SubscriptionRepository;
 import pt.bosch.heatingmonitor.services.NotificationService;
+import pt.bosch.heatingmonitor.services.SubscriptionSSEService;
 import reactor.core.publisher.Mono;
 
 @Component

@@ -9,7 +9,7 @@ servers:
 paths:
   /subscriptions:
     post:
-      summary: Cria uma nova subscrição para um determinado dispositivo. A subscrição é criada com o atributo active a true, ou seja, a subscrição está ativa. Para desativa a subscrição, deve chamar o endpoint /subscriptions/{subscriptionId}:deactivate
+      summary: Create a new subscription for a specific device. The subscription is created with the attribute "active" set to true, meaning that the subscription is active. To deactivate the subscription, you should call the endpoint /subscriptions/{subscriptionId}:deactivate.
       requestBody:
         required: true
         content:
@@ -58,7 +58,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Subscription'
         '404':
-          description: Não há subscrição com o id fornecido
+          description: There is no subscription with the provided ID.
         default:
           description: unexpected error
           content:
@@ -67,7 +67,7 @@ paths:
                 $ref: '#/components/schemas/Error'
   /subscriptions/{subscriptionId}:
     get:
-      summary: Retrieves the subscription based on its id. Dessa forma poderá verificar os atributos da inscrição, como por exemplo o atributo active que indica se a inscrição está ativa ou não.
+      summary: Retrieves the subscription based on its id. This way you can check the attributes of the subscription, such as the "active" attribute which indicates whether the subscription is active or not.
       parameters:
         - in: path
           name: subscriptionId
@@ -92,7 +92,7 @@ paths:
                 $ref: '#/components/schemas/Error'
   /notifications:
     post:
-      summary: Este endpoint é responsável por receber as requisições de notificação equipamentos de monitorização de temperatura
+      summary: This endpoint is responsible for receiving notifications requests from temperature monitoring appliances.
       requestBody:
         required: true
         content:

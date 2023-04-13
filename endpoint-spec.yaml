@@ -7,6 +7,37 @@ servers:
   - url: http://localhost:8080/api/v1
     description: Local server
 paths:
+  /subscriptions:listen:
+    post:
+      summary: Este endpoint é responsável por criar um canal de cominicação com quem o chamar enviando notificaçoes de um dispositivo
+      operationId: createSubscriptions
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                baseReceiverUrl:
+                  type: string
+                relativeReceiverUrl:
+                  type: string
+                device:
+                  type: string
+                  format: uuid
+      responses:
+        '201':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subscription'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /subscriptions:
     post:
       summary: Registers a new rest hook
@@ -71,7 +102,7 @@ paths:
                 $ref: '#/components/schemas/Error'
   /notifications:
     post:
-      summary: This receives a request from the device
+      summary: Este endpoint é responsável por receber as requisições de notificação equipamentos de monitorização de temperatura
       requestBody:
         required: true
         content:

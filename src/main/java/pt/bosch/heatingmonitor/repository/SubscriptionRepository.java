@@ -7,6 +7,4 @@ import reactor.core.publisher.Mono;
 
 import java.util.UUID;
 
-public interface SubscriptionRepository extends ReactiveCrudRepository<Subscription, UUID> {
-    Flux<Subscription> findByActive(Boolean active);
-}
+public interface SubscriptionRepository extends ReactiveCrudRepository<Subscription, UUID> {}

@@ -12,10 +12,7 @@ CREATE TABLE if NOT EXISTS notification
 CREATE TABLE if NOT EXISTS subscription
 (
     id UUID DEFAULT RANDOM_UUID() PRIMARY KEY,
-    base_receiver_url varchar(255),
-    relative_receiver_url varchar(255),
     active boolean,
-    event varchar(255),
     device UUID,
     created_date   timestamp,
     last_modified_date timestamp

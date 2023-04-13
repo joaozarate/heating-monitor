@@ -19,10 +19,10 @@ public class Subscription {
 
     @Id
     private UUID id; // UUID
-    private String baseReceiverUrl; // Protocol + host + port
-    private String relativeReceiverUrl; // Path
+//    private String baseReceiverUrl; // Protocol + host + port
+//    private String relativeReceiverUrl; // Path
     private Boolean active; // Y or N
-    private String event; // Event name subscribed
+//    private String event; // Event name subscribed
     private UUID device; // A device or piece of equipment
 
     @CreatedDate

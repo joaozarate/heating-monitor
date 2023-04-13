@@ -9,5 +9,5 @@ import java.util.UUID;
 public interface NotificationService {
     Mono<Notification> notify(Mono<NotificationRequest> dto);
 
-    void updateStatus(Mono<UUID> subscriptionId, String status);
+    Mono<Notification> updateStatus(Mono<UUID> subscriptionId, String status);
 }

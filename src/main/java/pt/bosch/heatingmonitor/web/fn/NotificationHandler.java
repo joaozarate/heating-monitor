@@ -11,6 +11,7 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.server.ServerWebInputException;
 import org.springframework.web.util.UriComponentsBuilder;
 import pt.bosch.heatingmonitor.exceptions.Error;
+import pt.bosch.heatingmonitor.exceptions.NotificationException;
 import pt.bosch.heatingmonitor.model.NotificationRequest;
 import pt.bosch.heatingmonitor.services.NotificationService;
 import reactor.core.publisher.Mono;
@@ -34,7 +35,8 @@ public class NotificationHandler {
                                 ).bodyValue(entity)
                         )
                 )
-                .onErrorResume(ServerWebInputException.class, e -> ServerResponse.badRequest().bodyValue(Error.builder().code("E-123").message(e.getMessage()).build()))
+                .onErrorResume(ServerWebInputException.class, e -> ServerResponse.badRequest().bodyValue(Error.builder().code("E-123").message(e.getReason()).build()))
+                .onErrorResume(NotificationException.class, e -> ServerResponse.badRequest().bodyValue(Error.builder().code("E-123").message(e.getMessage()).build()))
                 .onErrorResume(e -> ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR).bodyValue(Error.builder().code("E-999").message("Unexpected error. Please contact support.").build()));
     }
 
@@ -43,7 +45,7 @@ public class NotificationHandler {
         validator.validate(request, errors);
 
         if (errors.hasErrors()) {
-            throw new ServerWebInputException(errors.toString());
+            throw new ServerWebInputException("Payload is not valid.");
         }
     }
 

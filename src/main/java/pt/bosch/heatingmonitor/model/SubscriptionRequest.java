@@ -1,6 +1,7 @@
 package pt.bosch.heatingmonitor.model;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,11 +14,6 @@ import lombok.NoArgsConstructor;
 public class SubscriptionRequest {
 
     @NotBlank
-    private String baseReceiverUrl; // Protocol + host + port
-
-    @NotBlank
-    private String relativeReceiverUrl; // Path
-
-    @NotBlank
+    @Pattern(regexp = "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}", message = "UUID is invalid.")
     private String device; // A device or piece of equipment
 }

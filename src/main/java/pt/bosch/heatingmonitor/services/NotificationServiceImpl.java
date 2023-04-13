@@ -28,14 +28,8 @@ public class NotificationServiceImpl implements NotificationService {
                 })
                 .doOnSuccess(entity -> {
                     eventService.emitMessage(entity.getSubscription().toString(), mapper.domainToDto(entity));
-                    updateStatus(Mono.just(entity.getSubscription()), "S").subscribe();
-                })
-                .onErrorResume(NotificationException.class, e ->
-                        request.flatMap(notificationRequest ->
-                                updateStatus(Mono.just(UUID.fromString(notificationRequest.getSubscription())), "F")
-                                        .then(Mono.error(e))
-                        )
-                );
+                    updateStatus(Mono.just(entity.getId()), "S").subscribe();
+                });
     }
 
     @Override

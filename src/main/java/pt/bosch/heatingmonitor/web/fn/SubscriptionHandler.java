@@ -2,6 +2,7 @@ package pt.bosch.heatingmonitor.web.fn;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
@@ -12,14 +13,17 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.ServerWebInputException;
 import org.springframework.web.util.UriComponentsBuilder;
 import pt.bosch.heatingmonitor.exceptions.Error;
+import pt.bosch.heatingmonitor.exceptions.NotificationException;
 import pt.bosch.heatingmonitor.model.NotificationResponse;
 import pt.bosch.heatingmonitor.model.SubscriptionRequest;
 import pt.bosch.heatingmonitor.services.EventService;
 import pt.bosch.heatingmonitor.services.SubscriptionService;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.UUID;
 
+import static org.springframework.http.MediaType.TEXT_EVENT_STREAM;
 import static pt.bosch.heatingmonitor.web.fn.SubscriptionRouterConfig.SUBSCRIPTION_PATH_ID;
 
 @Component
@@ -69,9 +73,19 @@ public class SubscriptionHandler {
     }
 
     public Mono<ServerResponse> listen(ServerRequest request) {
+
+        Flux<NotificationResponse> notification;
+
+        try {
+            notification = eventService.getMessage(request.pathVariable("subscriptionId"));
+        } catch (NotificationException e) {
+            return ServerResponse.notFound().build();
+        }
+
         return ServerResponse.ok()
-                .contentType(org.springframework.http.MediaType.TEXT_EVENT_STREAM)
-                .body(eventService.getMessage(request.pathVariable("subscriptionId")), NotificationResponse.class);
+                .contentType(TEXT_EVENT_STREAM)
+                .body(notification, NotificationResponse.class);
+
     }
 
     private void validate(SubscriptionRequest dto) {

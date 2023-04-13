@@ -5,10 +5,12 @@ import org.springframework.stereotype.Service;
 import pt.bosch.heatingmonitor.exceptions.NotificationException;
 import pt.bosch.heatingmonitor.model.NotificationResponse;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.FluxSink;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.Sinks;
 
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -42,7 +44,10 @@ public class EventServiceImpl implements EventService {
     }
 
     public Flux<NotificationResponse> getMessage(String subscriptionId) {
-        return sinkMap.get(subscriptionId).asFlux();
+        return Optional.ofNullable(
+                sinkMap.get(subscriptionId))
+                .flatMap(sink -> Optional.of(sink.asFlux())).orElseThrow(() -> new NotificationException("Subscription not found.")
+        );
     }
 
 }

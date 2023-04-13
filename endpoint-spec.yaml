@@ -7,10 +7,9 @@ servers:
   - url: http://localhost:8080/api/v1
     description: Local server
 paths:
-  /subscriptions:listen:
+  /subscriptions:
     post:
-      summary: Este endpoint é responsável por criar um canal de cominicação com quem o chamar enviando notificaçoes de um dispositivo
-      operationId: createSubscriptions
+      summary: Cria uma nova subscrição para um determinado dispositivo. A subscrição é criada com o atributo active a true, ou seja, a subscrição está ativa. Para desativa a subscrição, deve chamar o endpoint /subscriptions/{subscriptionId}:deactivate
       requestBody:
         required: true
         content:
@@ -18,10 +17,6 @@ paths:
             schema:
               type: object
               properties:
-                baseReceiverUrl:
-                  type: string
-                relativeReceiverUrl:
-                  type: string
                 device:
                   type: string
                   format: uuid
@@ -32,30 +27,29 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Subscription'
+        '400':
+          description: invalid device uuid format supplied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         default:
           description: unexpected error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /subscriptions:
+  /subscriptions/{subscriptionId}:listen:
     post:
-      summary: Registers a new rest hook
-      operationId: createSubscriptions
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                baseReceiverUrl:
-                  type: string
-                relativeReceiverUrl:
-                  type: string
-                device:
-                  type: string
-                  format: uuid
+      summary: This endpoint is responsible for creating a communication channel with whoever calls it, sending notifications from a device.
+      parameters:
+        - in: path
+          name: subscriptionId
+          description: The subscription id
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '201':
           description: successful operation
@@ -63,6 +57,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Subscription'
+        '404':
+          description: Não há subscrição com o id fornecido
         default:
           description: unexpected error
           content:
@@ -71,7 +67,7 @@ paths:
                 $ref: '#/components/schemas/Error'
   /subscriptions/{subscriptionId}:
     get:
-      summary: Retrieves the subscription based on its id
+      summary: Retrieves the subscription based on its id. Dessa forma poderá verificar os atributos da inscrição, como por exemplo o atributo active que indica se a inscrição está ativa ou não.
       parameters:
         - in: path
           name: subscriptionId
@@ -88,12 +84,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Subscription'
-        '400':
-          description: invalid id supplied
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
         '404':
           description: gateway not found
           content:
@@ -155,14 +145,16 @@ components:
         id:
           type: string
           format: uuid
-        baseReceiverUrl:
-          type: string
-        relativeReceiverUrl:
-          type: string
         active:
-          type: string
+          type: boolean
         device:
           type: string
+        createdDate:
+          type: string
+          format: date-time
+        lastModifiedDate:
+          type: string
+          format: date-time
     Notification:
       type: object
       properties:
@@ -175,6 +167,12 @@ components:
           type: string
         code:
           type: string
+        createdDate:
+          type: string
+          format: date-time
+        lastModifiedDate:
+          type: string
+          format: date-time
         subscription:
           type: string
           format: uuid

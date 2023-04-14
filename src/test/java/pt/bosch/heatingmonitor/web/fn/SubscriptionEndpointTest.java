@@ -13,6 +13,7 @@ import java.util.UUID;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
+import static pt.bosch.heatingmonitor.web.fn.SubscriptionRouterConfig.SUBSCRIPTION_PATH;
 
 @SpringBootTest
 @AutoConfigureWebTestClient
@@ -28,7 +29,7 @@ class SubscriptionEndpointTest {
                 .build();
 
         webTestClient.post()
-                .uri(SubscriptionRouterConfig.SUBSCRIPTION_PATH)
+                .uri(SUBSCRIPTION_PATH)
                 .body(Mono.just(request), SubscriptionRequest.class)
                 .exchange()
                 .expectStatus().isCreated()
@@ -48,7 +49,7 @@ class SubscriptionEndpointTest {
                 .build();
 
         webTestClient.post()
-                .uri(SubscriptionRouterConfig.SUBSCRIPTION_PATH)
+                .uri(SUBSCRIPTION_PATH)
                 .body(Mono.just(request), SubscriptionRequest.class)
                 .exchange()
                 .expectStatus().isBadRequest()

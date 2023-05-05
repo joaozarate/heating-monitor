@@ -1,10 +1,8 @@
 package pt.bosch.heatingmonitor.services;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import pt.bosch.heatingmonitor.domain.Notification;
-import pt.bosch.heatingmonitor.events.NotificationEvent;
 import pt.bosch.heatingmonitor.exceptions.NotificationException;
 import pt.bosch.heatingmonitor.mappers.NotificationMapper;
 import pt.bosch.heatingmonitor.model.NotificationRequest;
@@ -19,7 +17,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     private final NotificationMapper mapper;
     private final NotificationRepository repository;
-    private final ApplicationEventPublisher applicationEventPublisher;
+    private final EventService eventService;
 
     @Override
     public Mono<Notification> notify(Mono<NotificationRequest> request) {
@@ -29,15 +27,20 @@ public class NotificationServiceImpl implements NotificationService {
                     return repository.save(notification);
                 })
                 .doOnSuccess(entity -> {
-                    applicationEventPublisher.publishEvent(NotificationEvent.builder().notification(entity).build());
-                }).onErrorResume(e -> Mono.error(new NotificationException("An unexpected error occurred while notifying.", e)));
+                    eventService.emitMessage(entity.getSubscription().toString(), mapper.domainToDto(entity));
+                    updateStatus(Mono.just(entity.getId()), "S").subscribe();
+                });
     }
 
     @Override
-    public void updateStatus(Mono<UUID> subscriptionId, String newStatus) {
-        repository.findAllById(subscriptionId).flatMap(entity -> {
-            entity.setNotificationStatus(newStatus);
-            return repository.save(entity);
-        });
+    public Mono<Notification> updateStatus(Mono<UUID> subscriptionId, String newStatus) {
+        return subscriptionId
+                .flatMap(id -> repository.findById(id)
+                        .flatMap(notification -> {
+                            notification.setNotificationStatus(newStatus);
+                            return repository.save(notification);
+                        })
+                )
+                .switchIfEmpty(Mono.error(new NotificationException("Subscription not found.")));
     }
 }

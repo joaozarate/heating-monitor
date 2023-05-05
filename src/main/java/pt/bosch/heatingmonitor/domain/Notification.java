@@ -19,7 +19,7 @@ public class Notification {
 
     @Id
     private UUID id; // UUID
-    private String notificationStatus; //'S'ent, 'F'ailed, 'W'aiting
+    private String notificationStatus; //'S'ent 'W'aiting
     private String message; // Detailed message
     private String code; // Message code
 

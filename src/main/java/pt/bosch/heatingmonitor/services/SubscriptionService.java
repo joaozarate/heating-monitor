@@ -13,9 +13,5 @@ public interface SubscriptionService {
 
     Mono<SubscriptionResponse> findById(UUID subscriptionId);
 
-    Flux<SubscriptionResponse> findByActive(Boolean active);
-
-    Mono<SubscriptionResponse> activate(String subscriptionId);
-
     Mono<SubscriptionResponse> deactivate(String subscriptionId);
 }

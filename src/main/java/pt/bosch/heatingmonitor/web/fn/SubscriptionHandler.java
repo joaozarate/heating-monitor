@@ -12,14 +12,17 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.ServerWebInputException;
 import org.springframework.web.util.UriComponentsBuilder;
 import pt.bosch.heatingmonitor.exceptions.Error;
+import pt.bosch.heatingmonitor.exceptions.NotificationException;
+import pt.bosch.heatingmonitor.model.NotificationResponse;
 import pt.bosch.heatingmonitor.model.SubscriptionRequest;
-import pt.bosch.heatingmonitor.model.SubscriptionResponse;
+import pt.bosch.heatingmonitor.services.EventService;
 import pt.bosch.heatingmonitor.services.SubscriptionService;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.UUID;
 
+import static org.springframework.http.MediaType.TEXT_EVENT_STREAM;
 import static pt.bosch.heatingmonitor.web.fn.SubscriptionRouterConfig.SUBSCRIPTION_PATH_ID;
 
 @Component
@@ -27,16 +30,8 @@ import static pt.bosch.heatingmonitor.web.fn.SubscriptionRouterConfig.SUBSCRIPTI
 public class SubscriptionHandler {
 
     private final SubscriptionService service;
+    private final EventService eventService;
     private final Validator validator;
-
-    private void validate(SubscriptionRequest dto) {
-        Errors errors = new BeanPropertyBindingResult(dto, "subscriptionRequest");
-        validator.validate(dto, errors);
-
-        if (errors.hasErrors()) {
-            throw new ServerWebInputException(errors.toString());
-        }
-    }
 
     public Mono<ServerResponse> subscribe(ServerRequest request) {
         return request.bodyToMono(SubscriptionRequest.class)
@@ -48,7 +43,7 @@ public class SubscriptionHandler {
                                 ).bodyValue(entity)
                         )
                 )
-                .onErrorResume(ServerWebInputException.class, e -> ServerResponse.badRequest().bodyValue(Error.builder().code("E-123").message(e.getMessage()).build()))
+                .onErrorResume(ServerWebInputException.class, e -> ServerResponse.badRequest().bodyValue(Error.builder().code("E-123").message(e.getReason()).build()))
                 .onErrorResume(e -> ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR).bodyValue(Error.builder().code("E-999").message("Unexpected error. Please contact support.").build()));
     }
 
@@ -69,21 +64,35 @@ public class SubscriptionHandler {
                 .onErrorResume(e -> ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR).bodyValue(Error.builder().code("E-999").message("Unexpected error. Please contact support.").build()));
     }
 
-    public Mono<ServerResponse> listSubscriptions(ServerRequest request) {
-        Flux<SubscriptionResponse> flux = service.findByActive(true);
-        return ServerResponse.ok().body(flux, SubscriptionResponse.class);
-    }
-
-    public Mono<ServerResponse> activate(ServerRequest request) {
-        return service.activate(request.pathVariable("subscriptionId"))
-                .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND)))
-                .then(ServerResponse.noContent().build());
-    }
-
     public Mono<ServerResponse> deactivate(ServerRequest request) {
         return service.deactivate(request.pathVariable("subscriptionId"))
                 .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND)))
-                .then(ServerResponse.noContent().build());
+                .then(ServerResponse.noContent().build())
+                .onErrorResume(ResponseStatusException.class, e -> ServerResponse.notFound().build());
     }
 
+    public Mono<ServerResponse> listen(ServerRequest request) {
+
+        Flux<NotificationResponse> notification;
+
+        try {
+            notification = eventService.getMessage(request.pathVariable("subscriptionId"));
+        } catch (NotificationException e) {
+            return ServerResponse.notFound().build();
+        }
+
+        return ServerResponse.ok()
+                .contentType(TEXT_EVENT_STREAM)
+                .body(notification, NotificationResponse.class);
+
+    }
+
+    private void validate(SubscriptionRequest dto) {
+        Errors errors = new BeanPropertyBindingResult(dto, "subscriptionRequest");
+        validator.validate(dto, errors);
+
+        if (errors.hasErrors()) {
+            throw new ServerWebInputException("Payload is not valid.");
+        }
+    }
 }

@@ -15,8 +15,6 @@ import java.util.UUID;
 @Builder
 public class SubscriptionResponse {
     private UUID id; // UUID
-    private String baseReceiverUrl; // Protocol + host + port
-    private String relativeReceiverUrl; // Path
     private Boolean active;
     private UUID device; // A device or piece of equipment
 

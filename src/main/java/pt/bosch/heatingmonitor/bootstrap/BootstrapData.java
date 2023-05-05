@@ -21,7 +21,7 @@ public class BootstrapData implements CommandLineRunner {
 
 
     @Override
-    public void run(String... args) throws Exception {
+    public void run(String... args) {
 
         loadData();
 
@@ -38,10 +38,7 @@ public class BootstrapData implements CommandLineRunner {
     private void loadData() {
 
         Subscription subscription = Subscription.builder()
-                .baseReceiverUrl("http://localhost:8080")
-                .relativeReceiverUrl("/api/v1/notifications")
                 .active(true)
-                .event("eventName_1")
                 .device(UUID.randomUUID())
                 .build();
 

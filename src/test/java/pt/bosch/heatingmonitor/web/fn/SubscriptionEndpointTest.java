@@ -13,6 +13,7 @@ import java.util.UUID;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
+import static pt.bosch.heatingmonitor.web.fn.SubscriptionRouterConfig.SUBSCRIPTION_PATH;
 
 @SpringBootTest
 @AutoConfigureWebTestClient
@@ -25,21 +26,16 @@ class SubscriptionEndpointTest {
     void testCreateSubscription() {
         SubscriptionRequest request = SubscriptionRequest.builder()
                 .device(UUID.randomUUID().toString())
-                .baseReceiverUrl("https://remote.com:8080")
-                .relativeReceiverUrl("/api/v1/alert")
                 .build();
 
         webTestClient.post()
-                .uri(SubscriptionRouterConfig.SUBSCRIPTION_PATH)
+                .uri(SUBSCRIPTION_PATH)
                 .body(Mono.just(request), SubscriptionRequest.class)
                 .exchange()
                 .expectStatus().isCreated()
                 .expectHeader().valueEquals("Content-type", "application/json")
                 .expectHeader().exists("location")
                 .expectBody()
-                .jsonPath("$.baseReceiverUrl").value(notNullValue())
-                .jsonPath("$.baseReceiverUrl").value(equalTo(request.getBaseReceiverUrl()))
-                .jsonPath("$.relativeReceiverUrl").value(equalTo(request.getRelativeReceiverUrl()))
                 .jsonPath("$.active").value(equalTo(true))
                 .jsonPath("$.device").value(equalTo(request.getDevice()))
                 .jsonPath("$.createdDate").value(notNullValue())
@@ -50,12 +46,10 @@ class SubscriptionEndpointTest {
     void testCreateSubscriptionDeviceNull() {
         SubscriptionRequest request = SubscriptionRequest.builder()
                 .device(null)
-                .baseReceiverUrl("https://remote.com:8080")
-                .relativeReceiverUrl("/api/v1/alert")
                 .build();
 
         webTestClient.post()
-                .uri(SubscriptionRouterConfig.SUBSCRIPTION_PATH)
+                .uri(SUBSCRIPTION_PATH)
                 .body(Mono.just(request), SubscriptionRequest.class)
                 .exchange()
                 .expectStatus().isBadRequest()
@@ -93,8 +87,6 @@ class SubscriptionEndpointTest {
                 .expectHeader().valueEquals("Content-type", "application/json")
                 .expectBody()
                 .jsonPath("$.id").value(equalTo(BootstrapData.subscriptionVar.getId().toString()))
-                .jsonPath("$.baseReceiverUrl").value(equalTo(BootstrapData.subscriptionVar.getBaseReceiverUrl()))
-                .jsonPath("$.relativeReceiverUrl").value(equalTo(BootstrapData.subscriptionVar.getRelativeReceiverUrl()))
                 .jsonPath("$.active").value(equalTo(BootstrapData.subscriptionVar.getActive()))
                 .jsonPath("$.device").value(equalTo(BootstrapData.subscriptionVar.getDevice().toString()))
                 .jsonPath("$.createdDate").value(notNullValue())

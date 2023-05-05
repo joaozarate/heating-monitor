@@ -6,7 +6,6 @@ import pt.bosch.heatingmonitor.mappers.SubscriptionMapper;
 import pt.bosch.heatingmonitor.model.SubscriptionRequest;
 import pt.bosch.heatingmonitor.model.SubscriptionResponse;
 import pt.bosch.heatingmonitor.repository.SubscriptionRepository;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.UUID;
@@ -17,14 +16,15 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     private final SubscriptionMapper mapper;
     private final SubscriptionRepository repository;
+    private final EventService eventService;
 
     @Override
     public Mono<SubscriptionResponse> saveSubscription(Mono<SubscriptionRequest> dto) {
         return dto.map(mapper::dtoToDomain)
                 .flatMap(entity -> {
-                    entity.setEvent("event-name");
                     entity.setActive(true);
-                    return repository.save(entity);
+                    return repository.save(entity)
+                            .doOnSuccess(subscription -> eventService.subscriber(subscription.getId().toString()));
                 })
                 .map(mapper::domainToDto);
     }
@@ -35,28 +35,13 @@ public class SubscriptionServiceImpl implements SubscriptionService {
                 .map(mapper::domainToDto);
     }
 
-
-    @Override
-    public Flux<SubscriptionResponse> findByActive(Boolean active) {
-        return repository.findByActive(active).map(mapper::domainToDto);
-    }
-
-    @Override
-    public Mono<SubscriptionResponse> activate(String subscriptionId) {
-        return repository.findById(UUID.fromString(subscriptionId))
-                .flatMap(entity -> {
-                    entity.setActive(true);
-                    return repository.save(entity);
-                })
-                .map(mapper::domainToDto);
-    }
-
     @Override
     public Mono<SubscriptionResponse> deactivate(String subscriptionId) {
         return repository.findById(UUID.fromString(subscriptionId))
                 .flatMap(entity -> {
                     entity.setActive(false);
-                    return repository.save(entity);
+                    return repository.save(entity)
+                            .doOnSuccess(subscription -> eventService.unsubscribe(subscription.getId().toString()));
                 })
                 .map(mapper::domainToDto);
     }
